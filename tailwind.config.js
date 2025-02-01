@@ -1,11 +1,22 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
-  content: ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}"],
+  content: [
+    "app/**/*.{ts,tsx}", 
+    "components/**/*.{ts,tsx}",
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}"
+  ],
   theme: {
     extend: {
+      borderRadius:{
+        DEFAULT: "var(--rounded)" 
+      },
       colors: {
-        border: "hsl(var(--border))",
+        border: "var(--border)",
+        "action-bg-button": "var(--action-bg-button)",
+        "action-text-button": "var(--action-text-button)",
+        "text-secundary": "var(--text-secundary)",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
