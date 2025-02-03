@@ -1,4 +1,4 @@
-const FormInput = ({type, disabled=false, placeholder=" ", register, label, required, name, value, onChange, maxLength, minLength}) =>{
+const FormInput = ({type, disabled=false, placeholder=" ", register, label, required, name, value, onChange, maxLength, minLength, errors}) =>{
     
     return(
     <>
@@ -14,14 +14,18 @@ const FormInput = ({type, disabled=false, placeholder=" ", register, label, requ
             onChange={onChange}
             maxLength={maxLength}
             minLength={minLength}
+            
             />
+            {errors && errors[name] && (
+              <span className="text-red-500 text-sm">{errors[name]?.message}</span>
+            )}
         </div>
     </>
     )
     
 }
 
-const FormRadio = ({ label, options, name, register, required }) => {
+const FormRadio = ({ label, options, name, register, required, errors }) => {
     return (
       <div className=''>
         <p className='font-bold '>{label} {required && <span className="text-red-500">*</span>}
@@ -40,7 +44,11 @@ const FormRadio = ({ label, options, name, register, required }) => {
             </div>
           ))}
         </div>
+        {errors && errors[name] && (
+                <span className="text-red-500 text-sm">{errors[name]?.message}</span>
+            )}
       </div>
+      
     );
   };
   

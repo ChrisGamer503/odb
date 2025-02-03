@@ -1,18 +1,22 @@
-import {FormButton, FormInput, FormRadio} from './components/componentsForm'
+import { useState } from 'react';
+import {FormButton, FormInput, FormRadio} from '../componentsForm'
+import { useForm } from 'react-hook-form';
 
-function FormularioOrientador({ register, handleSubmit, errors }) {
+function FormularioOrientador() {
     const [duiOrientador, setDuiOrientador] = useState("");
     const [telefonoFijoOrientador, setTelefonoFijoOrientador] = useState("");
+    
+    const{register, handleSubmit, formState:{errors}, setValue} = useForm()
 
     const handleDuiOrientadorChange = (e) => {
-        let value = e.target.value.replace(/\D/g, ""); // Eliminar caracteres no numéricos
+        let value = e.target.value.replace(/\D/g, "");
     
         if (value.length > 9) {
-          value = value.slice(0, 9); // Limitar a 9 dígitos
+          value = value.slice(0, 9); 
         }
     
         if (value.length > 8) {
-          value = value.slice(0, 8) + "-" + value.slice(8); // Insertar guion después de 8 dígitos
+          value = value.slice(0, 8) + "-" + value.slice(8);
         }
     
         setDuiOrientador(value);
@@ -32,88 +36,123 @@ function FormularioOrientador({ register, handleSubmit, errors }) {
         setTelefonoFijoOrientador(value);
       };
 
+      const onSubmit = (data) => {
+        try {
+            console.log("Formulario enviado:", data);
+            alert("Formulario enviado con éxito!");
+        } catch (error) {
+            console.error("Error al enviar el formulario:", error);
+            alert("Hubo un error al guardar los datos.");
+        }
+      };
+    
+
+      
+      
 
       return(
         <form action="" className='grid grid-cols-2 gap-2' onSubmit={handleSubmit(onSubmit)}> 
 
-        <FormInput type={"text"} label={"Dui"} value={duiOrientador} onChange={handleDuiOrientadorChange} placeholder='Ej: 12345678-1' maxLength={10}/>
-        <FormInput type={"text"} label={"Nombre Orientador"} required/>
-        <FormInput type={"text"} label={"Direccion Orientador"} required/>
-        <FormInput type={"text"} label={"Telefono Fijo"} value={telefonoFijoOrientador} onChange={handleTelefonoFijoOrientadorChange} placeholder='Ej: 1234-5678' maxLength={9} minLength={9}/>
-        <FormInput type={"date"} label={"Fecha de Nacimiento"} required/>
-        <FormInput type={"text"} label={"Lugar de Nacimiento"} required/>
-        <FormInput type={"text"} label={"Nombre de Madre"}/>
-        <FormInput type={"text"} label={"Nombre de Padre"}/>
-        <FormInput type={"text"} label={"Nombre de Espos@"}/>
-        <FormInput type={"email"} label={"Correo Electronico"}/>
-        <FormInput type={"text"} label={"Facebook"}/>
-        <FormInput type={"number"} label={"Grupo Familiar"} required/>
-        <FormInput type={"text"} label={"Religion"}/>
+        <FormInput errors={errors} type={"text"} label={"Dui"} value={duiOrientador} onChange={handleDuiOrientadorChange} placeholder='Ej: 12345678-1' maxLength={10} register={register} name={"dui_orientador"} required={true} />
+        <FormInput errors={errors} type={"text"} label={"Nombre Orientador"} required={true} register={register} name={"nombre_orientador"}/>
+        <FormInput errors={errors} type={"text"} label={"Direccion Orientador"} required={true} register={register} name={"direccion_orientador"}/>
+        <FormInput errors={errors} type={"text"} label={"Telefono Fijo"} value={telefonoFijoOrientador} onChange={handleTelefonoFijoOrientadorChange} placeholder='Ej: 1234-5678' maxLength={9} minLength={9} required={true} register={register} name={"telefono_fijo_orientador"}/>
+        <FormInput errors={errors} type={"date"} label={"Fecha de Nacimiento"} required={true} register={register} name={"fecha_nacimiento"}/>
+        <FormInput errors={errors} type={"text"} label={"Lugar de Nacimiento"} required={true} register={register} name={"lugar_nacimiento"}/>
+        <FormInput errors={errors} type={"text"} label={"Nombre de Madre"} register={register} name={"nombre_madre"}/>
+        <FormInput errors={errors} type={"text"} label={"Nombre de Padre"} register={register} name={"nombre_padre"}/>
+        <FormInput errors={errors} type={"text"} label={"Nombre de Espos@"} register={register} name={"nombre_espos@"}/>
+        <FormInput errors={errors} type={"email"} label={"Correo Electronico"} register={register} name={"correo_electronico"}/>
+        <FormInput errors={errors} type={"text"} label={"Facebook"} register={register} name={"facebook"}/>
+        <FormInput errors={errors} type={"number"} label={"Grupo Familiar"} required={true} register={register} name={"grupo_familiar"}/>
+        <FormInput errors={errors} type={"text"} label={"Religion"} register={register} name={"religion"}/>
 
-        <FormRadio 
+        <FormRadio
+            errors={errors} 
             label={"Asiste a Iglesia"} 
             options={[
               {label: "Si", value: 1},
               {label: "No", value: 0},
             ]} 
             name={"asiste_iglesia"}
+            register={register}
+            required={true}
         />
 
-        <FormRadio 
+        <FormRadio
+            errors={errors} 
             label={"Bautizo"} 
             options={[
               {label: "Si", value: 1},
               {label: "No", value: 0},
             ]} 
             name={"bautizo"}
+            register={register}
+            required={true}
           />
 
-          <FormRadio 
+          <FormRadio
+            errors={errors} 
             label={"Comunion"} 
             options={[
               {label: "Si", value: 1},
               {label: "No", value: 0},
             ]} 
             name={"comunion"}
+            register={register}
+            required={true}
           />
 
-          <FormRadio 
+          <FormRadio
+            errors={errors} 
             label={"Confirmacion"} 
             options={[
               {label: "Si", value: 1},
               {label: "No", value: 0},
             ]} 
             name={"confirmacion"}
+            register={register}
+            required={true}
           />
 
-          <FormRadio 
+          <FormRadio
+            errors={errors} 
             label={"Primera Dosis Covid"} 
             options={[
               {label: "Si", value: 1},
               {label: "No", value: 0},
             ]} 
             name={"primera_dosis"}
+            register={register}
+            required={true}
           />
 
-          <FormRadio 
+          <FormRadio
+            errors={errors} 
             label={"Segunda Dosis Covid"} 
             options={[
               {label: "Si", value: 1},
               {label: "No", value: 0},
             ]} 
             name={"segunda_dosis"}
+            register={register}
+            required={true}
           />
           
-          <FormRadio 
+          <FormRadio
+            errors={errors} 
             label={"Tercera Dosis Covid"} 
             options={[
               {label: "Si", value: 1},
               {label: "No", value: 0},
             ]} 
             name={"tercera_dosis"}
+            register={register}
+            required={true}
           />
 
-          <FormRadio 
+          <FormRadio
+            errors={errors} 
             label={"Grado de Estudio"} 
             options={[
               {label: "Parvularia", value: "parvularia"},
@@ -122,11 +161,13 @@ function FormularioOrientador({ register, handleSubmit, errors }) {
               {label: "Universitario", value: "universitario"}       
             ]} 
             name={"grado_estudio"}
+            register={register}
+            required={true}
           />
 
-          <FormInput type={"text"} label={"Otros Estudios"}/>
-          <FormInput type={"text"} label={"Lugar de trabajo"}/>
-          <FormInput type={"date"} label={"Fecha de Inscripcion"} required/>
+          <FormInput errors={errors} type={"text"} label={"Otros Estudios"} register={register} name={"otros_estudios"}/>
+          <FormInput errors={errors} type={"text"} label={"Lugar de trabajo"} register={register} name={"lugar_trabajo"}/>
+          <FormInput errors={errors} type={"date"} label={"Fecha de Inscripcion"} required={true} name={"fecha_inscripcion"} register={register} />
 
           <FormButton text={"Guardar"}/>
 
