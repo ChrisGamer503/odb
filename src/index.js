@@ -1,10 +1,25 @@
-import express from "express"
-import dotenv from "dotenv"
-dotenv.config()
+'use strict'
+const express = require('express');
+const app = express();
+const cors = require('cors');
+const morgan = require('morgan');
+require('dotenv').config();
 
-const app = express()
-app.use(express.json())
-app.use(cors())
+//settings
+const port = process.env.PORT || 3002;
+app.set('json spaces', 2);
 
+//middlewares
+app.use(morgan('dev'));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(cors());
 
-app.listen(5000)
+//routes
+app.use(require('./routes/index'));
+
+//starting the server
+app.listen(port, () => {
+    console.log('Conexión exitosa a la base de datos');
+    console.log('Server listening on port ' + port)
+})
