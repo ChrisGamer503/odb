@@ -1,25 +1,35 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {FormButton, FormInput, FormRadio} from '../componentsForm'
 import { useForm } from 'react-hook-form';
+import axios from 'axios';
+import { useEquipos } from "../../hooks/useEquipos"
+import { useCategorias } from "../../hooks/useCategorias"
+
 
 
 function FormularioJugador() {
-    const [telefonoFijo, setTelefonoFijo] = useState("");
+  const [telefonoFijo, setTelefonoFijo] = useState("");
   const [telefonoMovil, setTelefonoMovil] = useState("");
   const [dui, setDui] = useState("");
 
-    const{register, handleSubmit, formState:{errors}, setValue} = useForm()
+  const{register, handleSubmit, formState:{errors}, reset} = useForm()
+  const { equipos, setEquipos } = useEquipos();
+  const { categorias, setCategorias } = useCategorias()
 
+
+  //Esto porque hacia muchas peticiones GET :(
+  const [equiposCargados, setEquiposCargados] = useState(false); 
+  const [categoriasCargadas, setCategoriasCargadas] = useState(false);
 
   const handleTelefonoFijoChange = (e) => {
-    let value = e.target.value.replace(/\D/g, ""); // Eliminar caracteres no numéricos
+    let value = e.target.value.replace(/\D/g, ""); 
 
     if (value.length > 8) {
       value = value.slice(0, 8); // Limitar a 8 dígitos
     }
 
     if (value.length > 4) {
-      value = value.slice(0, 4) + "-" + value.slice(4); // Insertar guion después de 4 dígitos
+      value = value.slice(0, 4) + "-" + value.slice(4);
     }
 
     setTelefonoFijo(value);
@@ -40,28 +50,88 @@ function FormularioJugador() {
   };
 
   const handleDuiChange = (e) => {
-    let value = e.target.value.replace(/\D/g, ""); // Eliminar caracteres no numéricos
+    let value = e.target.value.replace(/\D/g, ""); 
 
     if (value.length > 9) {
-      value = value.slice(0, 9); // Limitar a 9 dígitos
+      value = value.slice(0, 9);
     }
 
     if (value.length > 8) {
-      value = value.slice(0, 8) + "-" + value.slice(8); // Insertar guion después de 8 dígitos
+      value = value.slice(0, 8) + "-" + value.slice(8);
     }
 
     setDui(value);
   };
 
-  const onSubmit = (data) => {
+
+  const obtenerEquipos = async () =>{
     try {
-        console.log("Formulario enviado:", data);
-        alert("Formulario enviado con éxito!");
+      const { data } = await axios.get(
+        "http://localhost:3001/api/list_equipo"
+      )
+      setEquipos(data)
+      setEquiposCargados(true);
+
     } catch (error) {
-        console.error("Error al enviar el formulario:", error);
+      console.log(error)
+    }
+
+  }
+
+  const obtenerCategorias = async () =>{
+    try {
+      const { data } = await axios.get(
+        "http://localhost:3001/api/list_categorias"
+      )
+      setCategorias(data)
+      setCategoriasCargadas(true);
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+
+  useEffect(() => {
+    if (!equiposCargados) {
+      obtenerEquipos();
+    }
+  }, [equiposCargados]);
+
+  useEffect(() => {
+    if (!categoriasCargadas) {
+      obtenerCategorias();
+    }
+  }, [categoriasCargadas]);
+
+  const onSubmit = async (data) => {
+    try {
+        const response = await axios.post("http://localhost:3001/api/add_jugadores", data);
+        console.log("Jugador registrado:", response.data);
+        alert("Jugador registrado con éxito!");
+
+        reset();
+        setTelefonoFijo("");
+        setTelefonoMovil("");
+        setDui("");
+
+    } catch (error) {
+        console.error("Error al registrar el jugador:", error);
         alert("Hubo un error al guardar los datos.");
     }
-  };
+}
+
+
+  const equiposPorCategoria = equipos.reduce((acc, equipo) => {
+    const categoria = categorias.find(cat => cat.id_categoria === equipo.id_categoria);
+    const nombreCategoria = categoria ? categoria.nombre : "Sin categoría";
+  
+    if (!acc[nombreCategoria]) {
+      acc[nombreCategoria] = [];
+    }
+    acc[nombreCategoria].push(equipo);
+  
+    return acc;
+  }, {});
 
   return(
     <form action="" className='grid grid-cols-2 gap-2 ' onSubmit={handleSubmit(onSubmit)}>
@@ -242,6 +312,21 @@ function FormularioJugador() {
         register={register}
         required={true}
     />
+
+    
+      <select {...register("id_equipo")} className="border rounded p-2 w-full" required>
+        <option value="">Seleccione un equipo</option>
+        {Object.entries(equiposPorCategoria).map(([categoria, equipos]) => (
+          <optgroup key={categoria} label={categoria}>
+            {equipos.map((equipo) => (
+              <option key={equipo.id_equipo} value={equipo.id_equipo}>
+                {equipo.nombre}
+              </option>
+            ))}
+          </optgroup>
+        ))}
+      </select>
+
 
     <FormButton text={"Guardar"}/>
 

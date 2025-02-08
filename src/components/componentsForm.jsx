@@ -1,8 +1,8 @@
-const FormInput = ({type, disabled=false, placeholder=" ", register, label, required, name, value, onChange, maxLength, minLength, errors}) =>{
+const FormInput = ({type, disabled=false, placeholder=" ", register, label, required, name, value, onChange, maxLength, minLength, errors, className}) =>{
     
     return(
     <>
-        <div className=" flex flex-col">
+        <div className={` flex flex-col ${className}`}>
             <label className=" font-bold text-base"> {label} {required && <span className="text-red-500">*</span>} </label>
             <input type={type}
             disabled={disabled}
@@ -14,7 +14,7 @@ const FormInput = ({type, disabled=false, placeholder=" ", register, label, requ
             onChange={onChange}
             maxLength={maxLength}
             minLength={minLength}
-            
+            min={0}
             />
             {errors && errors[name] && (
               <span className="text-red-500 text-sm">{errors[name]?.message}</span>
@@ -53,10 +53,10 @@ const FormRadio = ({ label, options, name, register, required, errors }) => {
   };
   
 
-  const FormButton = ({ text, onClick }) => {
+  const FormButton = ({ text, onClick, className }) => {
     return (
-      <div className="flex justify-center min-h-[48px]">
-        <button onClick={onClick} className="border rounded-md w-1/2 border-gray-300 hover:bg-blue-600 hover:text-white transition">
+      <div className={` flex justify-center min-h-[48px] ${className}`}>
+        <button onClick={onClick} className="border rounded-md w-1/2 border-gray-300 hover:bg-blue-600 hover:text-white transition min-w-[120px]">
           {text}
         </button>
       </div>

@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import {FormButton, FormInput, FormRadio} from '../componentsForm'
 import { useForm } from 'react-hook-form';
-
+import { useOrientadores } from '../../hooks/useOrientadores';
+import axios from 'axios';
 function FormularioOrientador() {
     const [duiOrientador, setDuiOrientador] = useState("");
     const [telefonoFijoOrientador, setTelefonoFijoOrientador] = useState("");
     
-    const{register, handleSubmit, formState:{errors}, setValue} = useForm()
+    const {orientadores, setOrientadores} = useOrientadores()
+    const{register, handleSubmit, formState:{errors}, reset} = useForm()
 
     const handleDuiOrientadorChange = (e) => {
         let value = e.target.value.replace(/\D/g, "");
@@ -36,15 +38,22 @@ function FormularioOrientador() {
         setTelefonoFijoOrientador(value);
       };
 
-      const onSubmit = (data) => {
+      const onSubmit = async (data) => {
         try {
-            console.log("Formulario enviado:", data);
-            alert("Formulario enviado con éxito!");
+            const response = await axios.post("http://localhost:3001/api/add_orientadores", data);
+            console.log("Orientador registrado:", response.data);
+            alert("Orientador registrado con éxito!");
+    
+            reset();
+            setTelefonoFijoOrientador("");
+            setDuiOrientador("");
+    
         } catch (error) {
-            console.error("Error al enviar el formulario:", error);
+            console.error("Error al registrar el orientador:", error);
             alert("Hubo un error al guardar los datos.");
         }
-      };
+    }
+    
     
 
       
