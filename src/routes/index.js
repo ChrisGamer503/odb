@@ -16,7 +16,11 @@ router.get('/api/test', (req, res) => {
 //endpoint for list all data
 router.get('/api/list_jugadores', dataController.list_jugadores);
 router.get('/api/list_orientadores', dataController.list_orientadores);
+router.get('/api/list_equipo', dataController.list_equipo)
+router.get('/api/list_categorias', dataController.list_categorias)
+
 router.post('/api/add_jugadores', dataController.add_jugadores);
 router.post('/api/add_orientadores', dataController.add_orientadores);
+
 
 module.exports = router;
