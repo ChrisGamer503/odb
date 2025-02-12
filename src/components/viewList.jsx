@@ -15,10 +15,10 @@ function ViewList({type}) {
     const obtenerDatos = async () => {
       try {
         if (type === "jugadores") {
-          const { data } = await axios.get("http://192.168.0.115:3001/api/list_jugadores");
+          const { data } = await axios.get(`${import.meta.env.API_URL}/list_jugador`);
           setJugadores(data);
         } else if (type === "orientadores") {
-          const { data } = await axios.get("http://192.168.0.115:3001/api/list_orientadores");
+          const { data } = await axios.get(`${import.meta.env.API_URL}/add_orientadores`);
           setOrientadores(data);
         }
       } catch (error) {
@@ -29,7 +29,7 @@ function ViewList({type}) {
     const obtenerEquipos = async () =>{
       try {
         const { data } = await axios.get(
-          "http://192.168.0.115:3001/api/list_equipo"
+          `${import.meta.env.API_URL}/list_equipo`
         )
         setEquipos(data)
       } catch (error) {

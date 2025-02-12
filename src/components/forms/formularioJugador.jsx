@@ -67,7 +67,7 @@ function FormularioJugador() {
   const obtenerEquipos = async () =>{
     try {
       const { data } = await axios.get(
-        "http://192.168.0.115:3001/api/list_equipo"
+        `${import.meta.env.API_URL}/list_equipo`
       )
       setEquipos(data)
       setEquiposCargados(true);
@@ -81,7 +81,7 @@ function FormularioJugador() {
   const obtenerCategorias = async () =>{
     try {
       const { data } = await axios.get(
-        "http://192.168.0.115:3001/api/list_categorias"
+        `${import.meta.env.API_URL}/list_categorias`
       )
       setCategorias(data)
       setCategoriasCargadas(true);
@@ -105,7 +105,7 @@ function FormularioJugador() {
 
   const onSubmit = async (data) => {
     try {
-        const response = await axios.post("http://192.168.0.115:3001/api/add_jugadores", data);
+        const response = await axios.post(`${import.meta.env.API_URL}/add_jugadores`, data);
         console.log("Jugador registrado:", response.data);
         alert("Jugador registrado con éxito!");
 

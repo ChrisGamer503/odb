@@ -40,7 +40,7 @@ function FormularioOrientador() {
 
       const onSubmit = async (data) => {
         try {
-            const response = await axios.post("http://192.168.0.115:3001/api/add_orientadores", data);
+            const response = await axios.post(`${import.meta.env.API_URL}/add_orientadores`, data);
             console.log("Orientador registrado:", response.data);
             alert("Orientador registrado con éxito!");
     
