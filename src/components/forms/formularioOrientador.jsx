@@ -39,8 +39,14 @@ function FormularioOrientador() {
       };
 
       const onSubmit = async (data) => {
+
+        const dataLimpiada = Object.keys(data).reduce((acc, key) => {
+          acc[key] = data[key] === "" ? null : data[key];
+          return acc;
+        }, {});
+
         try {
-            const response = await axios.post(`${import.meta.env.API_URL}/add_orientadores`, data);
+            const response = await axios.post(`http://10.10.20.198:3001/api/add_orientadores`, dataLimpiada);
             console.log("Orientador registrado:", response.data);
             alert("Orientador registrado con éxito!");
     

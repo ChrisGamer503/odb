@@ -21,6 +21,7 @@ function FormularioJugador() {
   const [equiposCargados, setEquiposCargados] = useState(false); 
   const [categoriasCargadas, setCategoriasCargadas] = useState(false);
 
+
   const handleTelefonoFijoChange = (e) => {
     let value = e.target.value.replace(/\D/g, ""); 
 
@@ -67,7 +68,7 @@ function FormularioJugador() {
   const obtenerEquipos = async () =>{
     try {
       const { data } = await axios.get(
-        `${import.meta.env.API_URL}/list_equipo`
+        `http://10.10.20.198:3001/api/list_equipo`
       )
       setEquipos(data)
       setEquiposCargados(true);
@@ -81,7 +82,7 @@ function FormularioJugador() {
   const obtenerCategorias = async () =>{
     try {
       const { data } = await axios.get(
-        `${import.meta.env.API_URL}/list_categorias`
+        `http://10.10.20.198:3001/api/list_categorias`
       )
       setCategorias(data)
       setCategoriasCargadas(true);
@@ -105,7 +106,13 @@ function FormularioJugador() {
 
   const onSubmit = async (data) => {
     try {
-        const response = await axios.post(`${import.meta.env.API_URL}/add_jugadores`, data);
+
+        const dataLimpiada = Object.keys(data).reduce((acc, key) => {
+          acc[key] = data[key] === "" ? null : data[key];
+          return acc;
+        }, {});
+        
+        const response = await axios.post(`http://10.10.20.198:3001/api/add_jugadores`, dataLimpiada);
         console.log("Jugador registrado:", response.data);
         alert("Jugador registrado con éxito!");
 
@@ -135,12 +142,6 @@ function FormularioJugador() {
 
   return(
     <form action="" className='grid grid-cols-2 gap-2 ' onSubmit={handleSubmit(onSubmit)}>
-    <FormInput errors={errors} type={"text"} label={"Primer Nombre"} required={true} register={register} name={'nombre1'}/> 
-    <FormInput errors={errors} type={"text"} label={"Segundo Nombre"} required={true} register={register} name={'nombre2'}/> 
-    <FormInput errors={errors} type={"text"} label={"Primer Apellido"} required={true} register={register} name={'apellido1'}/> 
-    <FormInput errors={errors} type={"text"} label={"Segundo Apellido"} register={register} name={'apellido2'}/> 
-    <FormInput errors={errors} type={"date"} label={"Fecha de Nacimiento"} required={true} register={register} name={'fecha_nacimiento'}/>
-    
     <FormRadio
         errors={errors} 
         label={"Genero"} 
@@ -152,16 +153,6 @@ function FormularioJugador() {
         required={true}
         register={register}
     />
-    
-    <FormInput errors={errors} type={"text"} label={"Centro de Estudios"} register={register} name={'centro_estudios'}/> 
-    <FormInput errors={errors} type={"text"} label={"Direccion"} required={true} register={register} name={'direccion'}/> 
-    <FormInput errors={errors} type={"text"} label={"Telefono Fijo"} value={telefonoFijo} onChange={handleTelefonoFijoChange} placeholder='Ej: 1234-5678' maxLength={9} minLength={9} register={register} name={'telefono_fijo'}/>
-    <FormInput errors={errors} type={"text"} label={"Telefono Movil"} value={telefonoMovil} onChange={handleTelefonoMovilChange} placeholder='Ej: 1234-5678' maxLength={9} minLength={9} required={true} register={register} name={'telefono_movil'}/>
-    <FormInput errors={errors} type={"text"} label={"Religion"} required={true} register={register} name={'religion'}/>
-
-    {//Falta foto 
-    }
-
     <FormRadio
         errors={errors} 
         label={"Madre"} 
@@ -173,17 +164,26 @@ function FormularioJugador() {
         register={register}
         required={true}
     />
-
+    <FormInput errors={errors} type={"text"} label={"Primer Nombre"} required={true} register={register} name={'nombre1'}/> 
+    <FormInput errors={errors} type={"text"} label={"Segundo Nombre"} required={true} register={register} name={'nombre2'}/> 
+    <FormInput errors={errors} type={"text"} label={"Primer Apellido"} required={true} register={register} name={'apellido1'}/> 
+    <FormInput errors={errors} type={"text"} label={"Segundo Apellido"} register={register} name={'apellido2'}/> 
     <FormInput errors={errors} type={"number"} label={"Numero de Partida"} register={register} name={'numero_partida'}/>
     <FormInput errors={errors} type={"number"} label={"Numero de Folio"} register={register} name={'numero_folio'}/>
     <FormInput errors={errors} type={"number"} label={"Numero de Libro"} register={register} name={'numero_libro'}/>
     <FormInput errors={errors} type={"number"} label={"Año de Partida"} register={register} name={'año_partida'}/>
+    <FormInput errors={errors} type={"text"} label={"Dui"} value={dui} onChange={handleDuiChange} placeholder='Ej: 12345678-1' maxLength={10}/>
     <FormInput errors={errors} type={"text"} label={"Lugar de Nacimiento"} required={true} register={register} name={'lugar_nacimiento'}/>
+    <FormInput errors={errors} type={"date"} label={"Fecha de Nacimiento"} required={true} register={register} name={'fecha_nacimiento'}/>
+    <FormInput errors={errors} type={"text"} label={"Direccion"} required={true} register={register} name={'direccion'}/>     
+    <FormInput errors={errors} type={"text"} label={"Telefono Fijo"} value={telefonoFijo} onChange={handleTelefonoFijoChange} placeholder='Ej: 1234-5678' maxLength={9} minLength={9} register={register} name={'telefono_fijo'}/>
     <FormInput errors={errors} type={"text"} label={"Nombre de Madre"} register={register} name={'nombre_madre'}/>
     <FormInput errors={errors} type={"text"} label={"Nombre de Padre"} register={register} name={'nombre_padre'}/>
     <FormInput errors={errors} type={"email"} label={"Correo"} register={register} name={'correo'}/>
     <FormInput errors={errors} type={"text"} label={"Facebook"} register={register} name={'facebook'}/>
-
+    <FormInput errors={errors} type={"number"} label={"Grupo Familiar"} required={true} register={register} name={'grupo_familiar'}/>
+    <FormInput errors={errors} type={"text"} label={"Telefono Movil"} value={telefonoMovil} onChange={handleTelefonoMovilChange} placeholder='Ej: 1234-5678' maxLength={9} minLength={9} required={true} register={register} name={'telefono_movil'}/>
+    <FormInput errors={errors} type={"text"} label={"Religion"} required={true} register={register} name={'religion'}/>
     <FormRadio
         errors={errors} 
         label={"Asiste a Iglesia"} 
@@ -195,8 +195,46 @@ function FormularioJugador() {
         register={register}
         required={true}
     />
+    <FormRadio
+        errors={errors} 
+        label={"Bautizo"} 
+        options={[
+            {label: "Si", value: 1},
+            {label: "No", value: 0},
+      ]} 
+        name={"bautizo"}
+        register={register}
+        required={true}
+    />
 
-    <FormInput errors={errors} type={"number"} label={"Grupo Familiar"} required={true} register={register} name={'grupo_familiar'}/>
+    <FormRadio
+        errors={errors} 
+        label={"Comunion"} 
+        options={[
+            {label: "Si", value: 1},
+            {label: "No", value: 0},
+      ]} 
+        name={"comunion"}
+        register={register}
+        required={true}
+    />
+
+    <FormRadio
+        errors={errors} 
+        label={"Confirmacion"} 
+        options={[
+            {label: "Si", value: 1},
+            {label: "No", value: 0},
+      ]} 
+        name={"confirmacion"}
+        register={register}
+        required={true}
+    />
+
+
+    
+    {//Falta foto 
+    }
     
     <FormRadio
         errors={errors} 
@@ -245,62 +283,23 @@ function FormularioJugador() {
         required={true}
         register={register}
     />
-
-    <FormRadio
+      <FormInput errors={errors} type={"text"} label={"Centro de Estudios"} register={register} name={'centro_estudio'}/> 
+      <FormRadio
         errors={errors} 
         label={"Grado de Estudio"} 
         options={[
             {label: "Parvularia", value: "parvularia"},
             {label: "Basica", value: "educacion basica"},
-        {label: "Media", value: "educacion media"},
-        {   label: "Universitario", value: "universitario"}       
-        ]} 
+            {label: "Media", value: "educacion media"},
+            {label: "Universitario", value: "universitario"},
+            {label: "Inactivo", value: "inactivo"}       
+            ]} 
         name={"grado_estudio"}
-      required={true}
-      register={register}
-    />
-
-    <FormInput errors={errors} type={"text"} label={"Direccion de estudio"} register={register} name={'direccion_centro_estudio'}/>
-
-    <FormRadio
-        errors={errors} 
-        label={"Bautizo"} 
-        options={[
-            {label: "Si", value: 1},
-            {label: "No", value: 0},
-      ]} 
-        name={"bautizo"}
-        register={register}
         required={true}
-    />
-
-    <FormRadio
-        errors={errors} 
-        label={"Comunion"} 
-        options={[
-            {label: "Si", value: 1},
-            {label: "No", value: 0},
-      ]} 
-        name={"comunion"}
         register={register}
-        required={true}
-    />
-
-    <FormRadio
-        errors={errors} 
-        label={"Confirmacion"} 
-        options={[
-            {label: "Si", value: 1},
-            {label: "No", value: 0},
-      ]} 
-        name={"confirmacion"}
-        register={register}
-        required={true}
-    />
-
-    <FormInput errors={errors} type={"text"} label={"Dui"} value={dui} onChange={handleDuiChange} placeholder='Ej: 12345678-1' maxLength={10}/>
-    <FormInput errors={errors} type={"date"} label={"Fecha de Inscripcion"} required/>
-
+      />
+      <FormInput errors={errors} type={"text"} label={"Direccion de estudio"} register={register} name={'direccion_centro_estudio'}/>
+  
     <FormRadio
         errors={errors} 
         label={"Activo"} 
@@ -312,8 +311,8 @@ function FormularioJugador() {
         register={register}
         required={true}
     />
-
     
+      
       <select {...register("id_equipo")} className="border rounded p-2 w-full" required>
         <option value="">Seleccione un equipo</option>
         {Object.entries(equiposPorCategoria).map(([categoria, equipos]) => (

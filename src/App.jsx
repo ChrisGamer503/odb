@@ -28,7 +28,6 @@ function App() {
       <TabsContent value="jugador">
 
       <div className="flex w-full justify-center items-center gap-3">
-        <FormInput type={"text"} disabled={mostrarFormulario} className={`w-full transition-all ${mostrarFormulario ? "bg-[#0000000e] text-gray-400 cursor-not-allowed border-gray-600" : "bg-white"}`}/>
         <FormButton
           text={mostrarFormulario ? "Cancelar" : "Inscribir Nuevo"}
           onClick={() => setMostrarFormulario(!mostrarFormulario)}
@@ -57,7 +56,7 @@ function App() {
       <div className="flex w-full justify-center items-center gap-3">
         <FormInput type={"text"} disabled={mostrarFormulario} className={`w-full transition-all ${mostrarFormulario ? "bg-[#0000000e] text-gray-400 cursor-not-allowed border-gray-600" : "bg-white"}`}/>
         <FormButton
-          text={mostrarFormulario ? "Cancelar" : "Inscribir Nuevo"}
+        text={mostrarFormulario ? "Cancelar" : "Inscribir Nuevo"}
           onClick={() => setMostrarFormulario(!mostrarFormulario)}
           className="!min-h-[34px]"
         />
