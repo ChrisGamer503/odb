@@ -1,24 +1,32 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+const API_URL = import.meta.env.VITE_API_URL;
 
 import { useJugador } from "../hooks/useJugadores";
 import { useOrientadores } from "../hooks/useOrientadores";
 import { useEquipos } from "../hooks/useEquipos";
+import { useCategorias } from "../hooks/useCategorias";
+import ModalCarnet from "./ModalCarnet";
 
 function ViewList({ type }) {
   const { equipos, setEquipos } = useEquipos();
   const { jugadores, setJugadores } = useJugador() || [];
   const { orientadores, setOrientadores } = useOrientadores() || [];
+  const { categorias, setCategorias} = useCategorias() || [];
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [showModal, setShowModal] = useState(false); 
+  const [selectedPersona, setSelectedPersona] = useState(null); 
+  const [selectedEquipo, setSelectedEquipo] = useState(null);
+  const [selectedCategoria, setSelectedCategoria] = useState(null); 
 
   const obtenerDatos = async () => {
     try {
       if (type === "jugadores") {
-        const { data } = await axios.get(`http://10.10.20.198:3001/api/list_jugadores`);
+        const { data } = await axios.get(`${API_URL}/list_jugadores`);
         setJugadores(Array.isArray(data) ? data : []);
       } else if (type === "orientadores") {
-        const { data } = await axios.get(`http://10.10.20.198:3001/api/list_orientadores`);
+        const { data } = await axios.get(`${API_URL}/list_orientadores`);
         setOrientadores(Array.isArray(data) ? data : []);
       }
     } catch (error) {
@@ -28,16 +36,39 @@ function ViewList({ type }) {
 
   const obtenerEquipos = async () => {
     try {
-      const { data } = await axios.get(`http://10.10.20.198:3001/api/list_equipo`);
+      const { data } = await axios.get(`${API_URL}/list_equipo`);
       setEquipos(data);
     } catch (error) {
       console.log(error);
     }
   };
 
+  const obtenerCategorias = async () => {
+    try {
+      const { data } = await axios.get(`${API_URL}/list_categorias`);
+      setCategorias(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSelectItem = (item) => {
+    const equipo = equipos.find((e) => e.id_equipo === item.id_equipo);
+    const categoria = equipo ? categorias.find((c) => c.id_categoria === equipo.id_categoria) : null;
+  
+    setSelectedPersona(item);
+    setSelectedEquipo(equipo);
+    setSelectedCategoria(categoria); 
+    setShowModal(true); 
+  };
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
   useEffect(() => {
     obtenerDatos();
     if (type === "jugadores") obtenerEquipos();
+    if (type === "jugadores") obtenerCategorias();
   }, [type]);
 
   const dataList = type === "jugadores" ? jugadores : orientadores;
@@ -64,11 +95,16 @@ function ViewList({ type }) {
 
     if (type === "jugadores") {
       const equipo = equipos.find((e) => e.id_equipo === item.id_equipo);
+      const categoria = equipo ? categorias.find((c) => c.id_categoria === equipo.id_categoria) : null;
+
+      fieldsToSearch.push(categoria ? categoria.nombre : "Sin Categoria")
       fieldsToSearch.push(equipo ? equipo.nombre : "Sin equipo");
     }
 
+
     return fieldsToSearch.some((field) => field.toLowerCase().includes(searchTerm.toLowerCase()));
   });
+
 
   return (
     <div className="flex flex-col gap-y-2 p-y-3 my-2">
@@ -82,16 +118,24 @@ function ViewList({ type }) {
       <p>{filteredData.length} Registros</p>
       {filteredData.length > 0 ? (
         filteredData.map((item) => {
-          console.log(item); // Depuración: Verifica la estructura de los datos
-          let extraInfo = "";
+          let nombreEquipo = "";
+          let nombreCategoria = "";
 
           if (type === "jugadores") {
             const equipo = equipos.find((e) => e.id_equipo === item.id_equipo);
-            extraInfo = (
+            const categoria = equipo ? categorias.find((c) => c.id_categoria === equipo.id_categoria) : null;
+
+            nombreEquipo = (
               <span>
                 <span className="font-semibold">Equipo:</span> {equipo ? equipo.nombre : "Sin equipo"}
               </span>
             );
+
+            nombreCategoria = (
+              <span>
+                <span className="font-semibold">Categoria:</span> {categoria ? categoria.nombre : "Sin categoria"}
+              </span>
+            )
           }
 
           // Construir el nombre completo dependiendo del tipo
@@ -106,17 +150,28 @@ function ViewList({ type }) {
             <div
               key={item.id_jugador || item.dui_orientador}
               className="border border-gray-300 p-2 rounded-lg shadow-md bg-white dark:bg-gray-800 transition-all duration-300 hover:scale-105"
+              onClick={() => handleSelectItem(item)}
             >
               <p className="text-lg font-semibold text-gray-700 dark:text-white">
                 {item.id_jugador || item.dui_orientador}{" - "}
                 {nombreCompleto}{" "}
-                {extraInfo && <span className="font-normal"> - {extraInfo}</span>}
+                {nombreEquipo && <span className="font-normal"> - {nombreEquipo}</span>}
+                {nombreCategoria && <span className="font-normal"> - {nombreCategoria} </span>}
               </p>
             </div>
           );
         })
       ) : (
         <p className="text-gray-500 dark:text-gray-400">No hay {type} registrados</p>
+      )}
+
+      {showModal && (
+        <ModalCarnet
+          persona={selectedPersona}
+          equipo={selectedEquipo}
+          categoria={selectedCategoria}
+          closeModal={closeModal}
+        />
       )}
     </div>
   );

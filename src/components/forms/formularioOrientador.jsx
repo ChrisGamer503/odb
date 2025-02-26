@@ -3,6 +3,8 @@ import {FormButton, FormInput, FormRadio} from '../componentsForm'
 import { useForm } from 'react-hook-form';
 import { useOrientadores } from '../../hooks/useOrientadores';
 import axios from 'axios';
+const API_URL = import.meta.env.VITE_API_URL;
+
 function FormularioOrientador() {
     const [duiOrientador, setDuiOrientador] = useState("");
     const [telefonoFijoOrientador, setTelefonoFijoOrientador] = useState("");
@@ -46,7 +48,7 @@ function FormularioOrientador() {
         }, {});
 
         try {
-            const response = await axios.post(`http://10.10.20.198:3001/api/add_orientadores`, dataLimpiada);
+            const response = await axios.post(`${API_URL}/add_orientadores`, dataLimpiada);
             console.log("Orientador registrado:", response.data);
             alert("Orientador registrado con éxito!");
     

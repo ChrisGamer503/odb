@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useEquipos } from "../../hooks/useEquipos"
 import { useCategorias } from "../../hooks/useCategorias"
+const API_URL = import.meta.env.VITE_API_URL;
 
 
 
@@ -68,7 +69,7 @@ function FormularioJugador() {
   const obtenerEquipos = async () =>{
     try {
       const { data } = await axios.get(
-        `http://10.10.20.198:3001/api/list_equipo`
+        `${API_URL}/list_equipo`
       )
       setEquipos(data)
       setEquiposCargados(true);
@@ -82,7 +83,7 @@ function FormularioJugador() {
   const obtenerCategorias = async () =>{
     try {
       const { data } = await axios.get(
-        `http://10.10.20.198:3001/api/list_categorias`
+        `${API_URL}/api/list_categorias`
       )
       setCategorias(data)
       setCategoriasCargadas(true);
@@ -112,7 +113,7 @@ function FormularioJugador() {
           return acc;
         }, {});
         
-        const response = await axios.post(`http://10.10.20.198:3001/api/add_jugadores`, dataLimpiada);
+        const response = await axios.post(`${API_URL}/api/add_jugadores`, dataLimpiada);
         console.log("Jugador registrado:", response.data);
         alert("Jugador registrado con éxito!");
 
