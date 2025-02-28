@@ -83,7 +83,7 @@ function FormularioJugador() {
   const obtenerCategorias = async () =>{
     try {
       const { data } = await axios.get(
-        `${API_URL}/api/list_categorias`
+        `${API_URL}/list_categorias`
       )
       setCategorias(data)
       setCategoriasCargadas(true);
@@ -113,7 +113,7 @@ function FormularioJugador() {
           return acc;
         }, {});
         
-        const response = await axios.post(`${API_URL}/api/add_jugadores`, dataLimpiada);
+        const response = await axios.post(`${API_URL}/add_jugadores`, dataLimpiada);
         console.log("Jugador registrado:", response.data);
         alert("Jugador registrado con éxito!");
 
