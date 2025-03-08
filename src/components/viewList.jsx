@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -7,6 +7,7 @@ import { useOrientadores } from "../hooks/useOrientadores";
 import { useEquipos } from "../hooks/useEquipos";
 import { useCategorias } from "../hooks/useCategorias";
 import ModalCarnet from "./ModalCarnet";
+import html2canvas from "html2canvas";
 
 function ViewList({ type }) {
   const { equipos, setEquipos } = useEquipos();
@@ -19,6 +20,8 @@ function ViewList({ type }) {
   const [selectedPersona, setSelectedPersona] = useState(null); 
   const [selectedEquipo, setSelectedEquipo] = useState(null);
   const [selectedCategoria, setSelectedCategoria] = useState(null); 
+
+  
 
   const obtenerDatos = async () => {
     try {
@@ -105,7 +108,39 @@ function ViewList({ type }) {
     return fieldsToSearch.some((field) => field.toLowerCase().includes(searchTerm.toLowerCase()));
   });
 
-
+  const handleImprimirTodos = async () => {
+    const elementsToCapture = document.querySelectorAll('.mi-clase'); // Selecciona los elementos con la clase 'mi-clase'
+  
+    if (elementsToCapture.length === 0) {
+      alert("No hay contenido para generar la imagen.");
+      return;
+    }
+  
+    for (let i = 0; i < elementsToCapture.length; i++) {
+      const element = elementsToCapture[i];
+      const persona = filteredData[i];
+      const idJugador = persona.id_jugador || persona.dui_orientador;
+  
+      try {
+        const canvas = await html2canvas(element, { scale: 2 });
+        const imgData = canvas.toDataURL("image/png");
+  
+        const link = document.createElement("a");
+        link.href = imgData;
+        link.download = `carnet_${idJugador}.png`;
+  
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error("Error generando o descargando la imagen:", error);
+      }
+    }
+  };
+  
+  
+  
+  
   return (
     <div className="flex flex-col gap-y-2 p-y-3 my-2">
       <input
@@ -115,6 +150,13 @@ function ViewList({ type }) {
         onChange={(e) => setSearchTerm(e.target.value)}
         className="border border-gray-300 p-2 rounded-lg mb-4"
       />
+      <button
+        onClick={handleImprimirTodos}
+        className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-all duration-300"
+      >
+        Imprimir Todos
+      </button>
+
       <p>{filteredData.length} Registros</p>
       {filteredData.length > 0 ? (
         filteredData.map((item) => {
@@ -173,8 +215,30 @@ function ViewList({ type }) {
           closeModal={closeModal}
         />
       )}
+
+      <div style={{ position: "absolute", opacity: 0, zIndex:-200 }}>
+        <div>
+          {filteredData.map((item) => {
+            const equipo = equipos.find((e) => e.id_equipo === item.id_equipo);
+            const categoria = equipo ? categorias.find((c) => c.id_categoria === equipo.id_categoria) : null;
+            return (
+              <ModalCarnet
+                key={item.id_jugador || item.dui_orientador}
+                persona={item}
+                equipo={equipo}
+                categoria={categoria}
+              />
+            );
+          })}
+        </div>
+      </div> 
+    
     </div>
   );
+
+
+
+  
 }
 
 export default ViewList;
