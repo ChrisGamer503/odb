@@ -15,13 +15,15 @@ function ViewList({ type }) {
   const { orientadores, setOrientadores } = useOrientadores() || [];
   const { categorias, setCategorias} = useCategorias() || [];
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchCode, setSearchCode] = useState("");
+  const [searchName, setSearchName] = useState("");
+  const [searchTeam, setSearchTeam] = useState("");
+  const [searchCategory, setSearchCategory] = useState("");
+
   const [showModal, setShowModal] = useState(false); 
   const [selectedPersona, setSelectedPersona] = useState(null); 
   const [selectedEquipo, setSelectedEquipo] = useState(null);
   const [selectedCategoria, setSelectedCategoria] = useState(null); 
-
-  
 
   const obtenerDatos = async () => {
     try {
@@ -64,6 +66,7 @@ function ViewList({ type }) {
     setSelectedCategoria(categoria); 
     setShowModal(true); 
   };
+
   const closeModal = () => {
     setShowModal(false);
   };
@@ -76,40 +79,33 @@ function ViewList({ type }) {
 
   const dataList = type === "jugadores" ? jugadores : orientadores;
 
-  // Filtrar los datos según el término de búsqueda
   const filteredData = dataList.filter((item) => {
-    // Construir el nombre completo dependiendo del tipo
     const fullName =
       type === "jugadores"
-        ? `${item.nombre1 || ""} ${item.nombre2 || ""} ${item.apellido1 || ""} ${
-            item.apellido2 || ""
-          }`.trim()
+        ? `${item.nombre1 || ""} ${item.nombre2 || ""} ${item.apellido1 || ""} ${item.apellido2 || ""}`.trim()
         : item.nombre_orientador || "";
 
-    // Buscar en todos los campos relevantes
-    const fieldsToSearch = [
-      item.id_jugador || item.dui_orientador,
-      fullName,
-      item.nombre1 || "",
-      item.nombre2 || "",
-      item.apellido1 || "",
-      item.apellido2 || "",
-    ];
-
+    let equipoNombre = "";
+    let categoriaNombre = "";
+    
     if (type === "jugadores") {
       const equipo = equipos.find((e) => e.id_equipo === item.id_equipo);
+      equipoNombre = equipo ? equipo.nombre : "Sin equipo";
+      
       const categoria = equipo ? categorias.find((c) => c.id_categoria === equipo.id_categoria) : null;
-
-      fieldsToSearch.push(categoria ? categoria.nombre : "Sin Categoria")
-      fieldsToSearch.push(equipo ? equipo.nombre : "Sin equipo");
+      categoriaNombre = categoria ? categoria.nombre : "Sin categoría";
     }
 
-
-    return fieldsToSearch.some((field) => field.toLowerCase().includes(searchTerm.toLowerCase()));
+    return (
+      (type === "jugadores" ? item.id_jugador.toString().includes(searchCode) : true) &&
+      fullName.toLowerCase().includes(searchName.toLowerCase()) &&
+      equipoNombre.toLowerCase().includes(searchTeam.toLowerCase()) &&
+      categoriaNombre.toLowerCase().includes(searchCategory.toLowerCase())
+    );
   });
 
   const handleImprimirTodos = async () => {
-    const elementsToCapture = document.querySelectorAll('.mi-clase'); // Selecciona los elementos con la clase 'mi-clase'
+    const elementsToCapture = document.querySelectorAll('.mi-clase');
   
     if (elementsToCapture.length === 0) {
       alert("No hay contenido para generar la imagen.");
@@ -137,19 +133,56 @@ function ViewList({ type }) {
       }
     }
   };
-  
-  
-  
-  
+
   return (
     <div className="flex flex-col gap-y-2 p-y-3 my-2">
-      <input
-        type="text"
-        placeholder={`Buscar ${type}...`}
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="border border-gray-300 p-2 rounded-lg mb-4"
-      />
+      <div className="flex flex-wrap gap-2 mb-4">
+        {type === "jugadores" && (
+          <>
+            <input
+              type="text"
+              placeholder={`Buscar por Código...`}
+              value={searchCode}
+              onChange={(e) => setSearchCode(e.target.value)}
+              className="border border-gray-300 p-2 rounded-lg flex-1 min-w-[200px]"
+            />
+            <input
+              type="text"
+              placeholder={`Buscar por Equipo...`}
+              value={searchTeam}
+              onChange={(e) => setSearchTeam(e.target.value)}
+              className="border border-gray-300 p-2 rounded-lg flex-1 min-w-[200px]"
+            />
+            <input
+              type="text"
+              placeholder={`Buscar por Categoría...`}
+              value={searchCategory}
+              onChange={(e) => setSearchCategory(e.target.value)}
+              className="border border-gray-300 p-2 rounded-lg flex-1 min-w-[200px]"
+            />
+            <input
+              type="text"
+              placeholder={`Buscar por Nombre...`}
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
+              className="border border-gray-300 p-2 rounded-lg flex-1 min-w-[200px]"
+            />
+          </>
+        )}
+
+        {type === "orientadores" && (
+          <>
+            <input
+              type="text"
+              placeholder="Buscar por Nombre..."
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
+              className="border border-gray-300 p-2 rounded-lg flex-1 min-w-[200px]"
+            />
+          </>
+        )}
+      </div>
+
       <button
         onClick={handleImprimirTodos}
         className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-all duration-300"
@@ -175,17 +208,14 @@ function ViewList({ type }) {
 
             nombreCategoria = (
               <span>
-                <span className="font-semibold">Categoria:</span> {categoria ? categoria.nombre : "Sin categoria"}
+                <span className="font-semibold">Categoría:</span> {categoria ? categoria.nombre : "Sin categoría"}
               </span>
-            )
+            );
           }
 
-          // Construir el nombre completo dependiendo del tipo
           const nombreCompleto =
             type === "jugadores"
-              ? `${item.nombre1 || ""} ${item.nombre2 || ""} ${item.apellido1 || ""} ${
-                  item.apellido2 || ""
-                }`.trim()
+              ? `${item.nombre1 || ""} ${item.nombre2 || ""} ${item.apellido1 || ""} ${item.apellido2 || ""}`.trim()
               : item.nombre_orientador || "Nombre no disponible";
 
           return (
@@ -215,30 +245,8 @@ function ViewList({ type }) {
           closeModal={closeModal}
         />
       )}
-
-      <div style={{ position: "absolute", opacity: 0, zIndex:-200 }}>
-        <div>
-          {filteredData.map((item) => {
-            const equipo = equipos.find((e) => e.id_equipo === item.id_equipo);
-            const categoria = equipo ? categorias.find((c) => c.id_categoria === equipo.id_categoria) : null;
-            return (
-              <ModalCarnet
-                key={item.id_jugador || item.dui_orientador}
-                persona={item}
-                equipo={equipo}
-                categoria={categoria}
-              />
-            );
-          })}
-        </div>
-      </div> 
-    
     </div>
   );
-
-
-
-  
 }
 
 export default ViewList;
