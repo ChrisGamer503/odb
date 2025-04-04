@@ -1,7 +1,7 @@
 // SQL Server configuration, use sql server authentication
 const config = {
     user: 'sa', //usuario de sql server
-    password: '123456', //contraseña de sql server
+    password: 'bd_oratorio', //contraseña de sql server
     server: 'localhost', // localhost or an IP address
     database: 'bd_oratorio', // nombre de la base de datos
     options: {

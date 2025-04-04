@@ -42,6 +42,8 @@ exports.list_categorias = async (req, res) => {
 };
 
 exports.add_jugadores = async (req, res) => {
+
+
     const {
         nombre1,
         nombre2,
@@ -77,19 +79,24 @@ exports.add_jugadores = async (req, res) => {
         bautizo, comunion,
         confirmacion,
         dui_jugador,
-        fecha_inscripcion,
         activo,
         id_equipo
     } = req.body;
+
+    
+    
+
     try {
         const pool = await sql.connect(config);
 
         let iniciales;
-        if (apellido1 && apellido2.trim() !== "") {
+        if (apellido1 && apellido2 && apellido2.trim() !== "") {
             iniciales = apellido1.charAt(0).toUpperCase() + apellido2.charAt(0).toUpperCase();
         } else {
             iniciales = apellido1.substring(0, 2).toUpperCase();
         }
+
+        const fecha_inscripcion = new Date()
 
         const countResult = await pool.request()
             .input("iniciales", sql.VarChar,`J${iniciales}%`)
@@ -171,8 +178,10 @@ exports.add_orientadores = async (req, res) => {
         estudios_academicos,
         otros_estudios,
         lugar_trabajo,
-        fecha_inscripcion
     } = req.body;
+
+    const fecha_inscripcion = new Date()
+
     try {
         const pool = await sql.connect(config);
         const result = await pool.request()
